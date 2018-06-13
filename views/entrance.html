@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+
+  <script src="http://localhost:8080/socket.io/socket.io.js" charset="utf-8"></script>
+
+  <script>
+    let sock = io.connect('ws://localhost:8080/');
+
+    window.onload = function () {
+      let oBtn_reg = document.getElementById('btn_reg');
+      let oBtn_login = document.getElementById('btn_login');
+
+      let oUser = document.getElementById('user');
+      let oPass = document.getElementById('pass');
+
+      //注册
+      sock.on('reg_ret', (code, msg) => {
+        //reg_ret ==>>reg的返回值
+        if (code) {
+          alert('注册失败，' + msg);
+        } else {
+          alert('注册成功');
+        }
+      });
+
+      oBtn_reg.onclick = function () {
+        sock.emit('reg', oUser.value, oPass.value);
+
+      };
+
+
+      //登录
+      sock.on('login_ret', (code, msg) => {
+        if (code) {
+          alert('登录错误，' + msg);
+        } else {
+          alert('登录成功');
+        }
+      });
+
+      oBtn_login.onclick = function () {
+        sock.emit('login', oUser.value, oPass.value);
+      };
+
+    };
+  </script>
+
+  
+  <!-- <script>
+    //注册
+    $(function () {
+      $('#btn_reg').click(function () {
+        $.ajax({
+          url: '/reg',
+          data: {
+            user: $('#user').val(),
+            pass: $('#pass').val()
+          },
+          dataType: 'json',
+          success(res) {
+            if (res.code) {
+              alert('注册失败,' + res.msg);
+            } else {
+              alert('注册成功');
+            }
+          },
+          error(err) {
+            alert('网络不通');
+          }
+        });
+      });
+    });
+
+    //登录
+    $(function () {
+      $('#btn_login').click(function () {
+        $.ajax({
+          url: '/login',
+          data: {
+            user: $('#user').val(),
+            pass: $('#pass').val()
+          },
+          dataType: 'json',
+          success(res) {
+            if (res.code) {
+              alert('登录失败,' + res.msg);
+            } else {
+              alert('登录成功');
+            }
+          },
+          error(err) {
+            alert('网络不通');
+          }
+        });
+      });
+    });
+  </script> -->
+
+</head>
+
+<body>
+
+  用户：
+  <input type="text" id="user">
+  <br> 密码：
+  <input type="password" id="pass">
+  <br>
+  <input type="button" value="注册" id="btn_reg">
+  <input type="button" value="登录" id="btn_login">
+
+</body>
+
+</html>
