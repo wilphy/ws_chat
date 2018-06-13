@@ -38,7 +38,7 @@
       //登录
       sock.on('login_ret', (code, msg) => {
         if (code) {
-          alert('登录错误，' + msg);
+          alert('登录失败，' + msg);
         } else {
           alert('登录成功');
         }

@@ -41,17 +41,19 @@ httpServer.listen(8080);
 //Websocket服务器
 let wsSever = io.listen(httpServer);
 
-let cur_username = '';
-let cur_userID = 0;
-
-
 wsSever.on('connection', sock => {
+
+  let cur_username = '';
+  let cur_userID = 0;
+
+  var RegExp = /^\w{3,16}$/;
+
   //注册
   sock.on('reg', (user, pass) => {
     //1.校验数据
-    if (!/^\w{6,32}$/.test(user)) {
+    if (!RegExp.test(user)) {
       sock.emit('reg_ret', 1, '用户名不符合规范');
-    } else if (!/^\w{6,32}$/.test(pass)) {
+    } else if (!RegExp.test(pass)) {
       sock.emit('reg_ret', 1, '密码不符合规范');
     } else {
       //2.用户名是否已存在
@@ -77,13 +79,13 @@ wsSever.on('connection', sock => {
   //登录
   sock.on('login', (user, pass) => {
     //1.检验数据
-    if (!/^\w{6,32}$/.test(user)) {
+    if (!RegExp.test(user)) {
       sock.emit('login_ret', 1, '用户名不符合规范');
-    } else if (!/^\w{6,32}$/.test(pass)) {
+    } else if (!RegExp.test(pass)) {
       sock.emit('login_ret', 1, '密码不符合规范');
     } else {
       //2.判断用户是否存在
-      db.query(`SELECT password FROM user_table WHERE username='${user}'`, (err, data) => {
+      db.query(`SELECT ID,password FROM user_table WHERE username='${user}'`, (err, data) => {
         if (err) {
           sock.emit('login_ret', 1, '数据库有误');
         } else if (data.length == 0) {
@@ -92,7 +94,7 @@ wsSever.on('connection', sock => {
           sock.emit('login_ret', 1, '用户名或密码有误');
         } else {
           //3.改在线状态
-          db.query(`UPDATE user_table SET online=1 WHERE ID=${data[0].ID}`, (err, data) => {
+          db.query(`UPDATE user_table SET online=1 WHERE ID=${data[0].ID}`, err => {
             if (err) {
               sock.emit('login_ret', 1, '数据库有误');
             } else {
@@ -104,19 +106,14 @@ wsSever.on('connection', sock => {
         }
       });
     }
-
-
   });
 
   //离线
   sock.on('disconnect', () => {
-    db.query(`UPDATE user_table SET online=0  WHERE ID=${cur_userID}`, (err) => {
-      console.log('用户断开连接');
-
+    db.query(`UPDATE user_table SET online=0 WHERE ID=${cur_userID}`, err => {
       if (err) {
-        console.log('数据库有误', err);
+        console.log('database error', err);
       }
-
       cur_username = '';
       cur_userID = 0;
     });
