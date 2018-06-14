@@ -29,13 +29,11 @@ let httpServer = http.createServer((req, res) => {
     } else {
       res.write(data);
     }
-
     res.end();
   });
 });
 
 httpServer.listen(8080);
-
 
 
 //Websocket服务器
@@ -46,14 +44,17 @@ wsSever.on('connection', sock => {
   let cur_username = '';
   let cur_userID = 0;
 
-  var RegExp = /^\w{3,16}$/;
+  var RegExpTest = /^\w{3,16}$/;
 
   //注册
   sock.on('reg', (user, pass) => {
+
+    console.log('用户请求了注册');
+
     //1.校验数据
-    if (!RegExp.test(user)) {
+    if (!RegExpTest.test(user)) {
       sock.emit('reg_ret', 1, '用户名不符合规范');
-    } else if (!RegExp.test(pass)) {
+    } else if (!RegExpTest.test(pass)) {
       sock.emit('reg_ret', 1, '密码不符合规范');
     } else {
       //2.用户名是否已存在
@@ -78,10 +79,13 @@ wsSever.on('connection', sock => {
 
   //登录
   sock.on('login', (user, pass) => {
+
+    console.log('用户请求了登录');
+
     //1.检验数据
-    if (!RegExp.test(user)) {
+    if (!RegExpTest.test(user)) {
       sock.emit('login_ret', 1, '用户名不符合规范');
-    } else if (!RegExp.test(pass)) {
+    } else if (!RegExpTest.test(pass)) {
       sock.emit('login_ret', 1, '密码不符合规范');
     } else {
       //2.判断用户是否存在
@@ -99,6 +103,7 @@ wsSever.on('connection', sock => {
               sock.emit('login_ret', 1, '数据库有误');
             } else {
               sock.emit('login_ret', 0, '登录成功');
+
               cur_username = user;
               cur_userID = data[0].ID;
             }

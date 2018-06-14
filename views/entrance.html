@@ -7,6 +7,37 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
 
+  <style>
+    
+    * {
+      padding: 0;
+      margin: 0;
+      margin: 0 auto;
+    }
+
+    body {
+      width: 100%;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    #loginForm {
+      width: 30rem;
+      height: 20rem;
+      background-color: #ddf;
+      padding-top: 8rem; 
+    }
+
+    label,input {
+      margin: 1rem;
+    }
+
+    input {
+      font-size: 2rem;
+    }
+
+  </style>
+
   <script src="http://localhost:8080/socket.io/socket.io.js" charset="utf-8"></script>
 
   <script>
@@ -31,9 +62,7 @@
 
       oBtn_reg.onclick = function () {
         sock.emit('reg', oUser.value, oPass.value);
-
       };
-
 
       //登录
       sock.on('login_ret', (code, msg) => {
@@ -47,72 +76,25 @@
       oBtn_login.onclick = function () {
         sock.emit('login', oUser.value, oPass.value);
       };
-
     };
   </script>
-
-  
-  <!-- <script>
-    //注册
-    $(function () {
-      $('#btn_reg').click(function () {
-        $.ajax({
-          url: '/reg',
-          data: {
-            user: $('#user').val(),
-            pass: $('#pass').val()
-          },
-          dataType: 'json',
-          success(res) {
-            if (res.code) {
-              alert('注册失败,' + res.msg);
-            } else {
-              alert('注册成功');
-            }
-          },
-          error(err) {
-            alert('网络不通');
-          }
-        });
-      });
-    });
-
-    //登录
-    $(function () {
-      $('#btn_login').click(function () {
-        $.ajax({
-          url: '/login',
-          data: {
-            user: $('#user').val(),
-            pass: $('#pass').val()
-          },
-          dataType: 'json',
-          success(res) {
-            if (res.code) {
-              alert('登录失败,' + res.msg);
-            } else {
-              alert('登录成功');
-            }
-          },
-          error(err) {
-            alert('网络不通');
-          }
-        });
-      });
-    });
-  </script> -->
 
 </head>
 
 <body>
 
-  用户：
-  <input type="text" id="user">
-  <br> 密码：
-  <input type="password" id="pass">
-  <br>
-  <input type="button" value="注册" id="btn_reg">
-  <input type="button" value="登录" id="btn_login">
+  <section id="loginForm">
+
+    <label for="">用户：</label>
+    <input type="text" id="user">
+    <br>
+    <label for="">密码：</label>
+    <input type="password" id="pass">
+    <br>
+    <input type="button" value="注册" id="btn_reg">
+    <input type="button" value="登录" id="btn_login">
+
+  </section>
 
 </body>
 
