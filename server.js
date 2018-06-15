@@ -20,6 +20,7 @@ db.query(`SELECT * FROM user_table`, (err, data) => {
   }
 });
 
+
 //hhtp服务器
 let httpServer = http.createServer((req, res) => {
   fs.readFile(`views${req.url}`, (err, data) => {
@@ -39,7 +40,11 @@ httpServer.listen(8080);
 //Websocket服务器
 let wsSever = io.listen(httpServer);
 
+let arrSock = [];
+
 wsSever.on('connection', sock => {
+
+  arrSock.push(sock);
 
   let cur_username = '';
   let cur_userID = 0;
@@ -113,6 +118,21 @@ wsSever.on('connection', sock => {
     }
   });
 
+  sock.on('msg', txt => {
+    if (!txt) {
+      sock.emit('msg_ret', 1, '消息文本不能为空');
+    } else {
+      //广播给所有人
+      arrSock.forEach(item=>{
+        if(item == sock) return;
+
+        item.emit('msg', cur_username ,txt);
+      });
+
+      sock.emit('msg', 0, '发送成功');
+    }
+  });
+
   //离线
   sock.on('disconnect', () => {
     db.query(`UPDATE user_table SET online=0 WHERE ID=${cur_userID}`, err => {
@@ -121,6 +141,8 @@ wsSever.on('connection', sock => {
       }
       cur_username = '';
       cur_userID = 0;
+
+      arrSock = arrSock.filter(item => item != sock);
     });
   });
 });

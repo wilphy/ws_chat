@@ -8,7 +8,6 @@
   <title>Document</title>
 
   <style>
-    
     * {
       padding: 0;
       margin: 0;
@@ -22,13 +21,15 @@
     }
 
     #loginForm {
+      margin-top: 6rem;
       width: 30rem;
       height: 20rem;
       background-color: #ddf;
-      padding-top: 8rem; 
+      padding-top: 6rem;
     }
 
-    label,input {
+    label,
+    input {
       margin: 1rem;
     }
 
@@ -36,6 +37,9 @@
       font-size: 2rem;
     }
 
+    .mine {
+      background: rgb(51, 212, 151);
+    }
   </style>
 
   <script src="http://localhost:8080/socket.io/socket.io.js" charset="utf-8"></script>
@@ -44,11 +48,19 @@
     let sock = io.connect('ws://localhost:8080/');
 
     window.onload = function () {
+      let cur_username = '';
+
       let oBtn_reg = document.getElementById('btn_reg');
       let oBtn_login = document.getElementById('btn_login');
 
+      let oBtnSend = document.getElementById('btn_send');
+
+      let oU1 = document.getElementById('uli');
+
       let oUser = document.getElementById('user');
       let oPass = document.getElementById('pass');
+
+      let = oTxt = document.getElementById('txt_msg');
 
       //注册
       sock.on('reg_ret', (code, msg) => {
@@ -70,11 +82,37 @@
           alert('登录失败，' + msg);
         } else {
           alert('登录成功');
+          cur_username = oUser.value;
         }
       });
 
       oBtn_login.onclick = function () {
         sock.emit('login', oUser.value, oPass.value);
+      };
+
+      //消息
+      sock.on('msg', (code, msg) => {
+        if (code) {
+          alert('消息发送失败, ' + msg);
+        } else {
+          let oLi = document.createElement('li');
+          oLi.className = 'mine';
+
+          oLi.innerHTML = `<h4>${cur_username}</h4><p>${oTxt.value}</p>`;
+          oU1.appendChild(oLi);
+
+          oTxt.value = '';
+        }
+      });
+
+      sock.on('msg', (name, txt) => {
+        let oLi = document.createElement('li');
+        oLi.innerHTML = `<h4>${name}</h4><p>${txt}</p>`;
+        oU1.appendChild(oLi);
+      });
+
+      oBtnSend.onclick = function () {
+        sock.emit('msg', oTxt.value);
       };
     };
   </script>
@@ -95,6 +133,14 @@
     <input type="button" value="登录" id="btn_login">
 
   </section>
+
+  <textarea name="" id="txt_msg" cols="30" rows="10"></textarea>
+
+  <input type="button" value="发送" id="btn_send">
+
+  <ul id="ul1">
+
+  </ul>
 
 </body>
 
